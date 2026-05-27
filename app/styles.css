@@ -173,6 +173,17 @@ body::after {
 
 .btn-primary:hover { box-shadow: 0 6px 30px rgba(232, 25, 44, 0.5); }
 
+.btn-success {
+  background: linear-gradient(135deg, var(--green) 0%, #16A34A 100%);
+  color: #fff;
+  box-shadow: 0 4px 24px rgba(34, 197, 94, 0.35);
+}
+
+.btn-success:hover {
+  box-shadow: 0 6px 30px rgba(34, 197, 94, 0.5);
+}
+
+
 .btn-google {
   background: #fff;
   color: #1a1a1a;

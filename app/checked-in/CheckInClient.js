@@ -136,7 +136,7 @@ export default function CheckInClient() {
               </div>
             </div>
 
-            <button className="btn btn-primary" onClick={handleConfirm} disabled={confirming}>
+            <button className="btn btn-success" onClick={handleConfirm} disabled={confirming}>
               {confirming ? "กำลังบันทึกเวลาเช็คอิน..." : "ยืนยัน"}
             </button>
             <div className="corner">CONFIRM</div>
