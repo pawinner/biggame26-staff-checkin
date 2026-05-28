@@ -115,7 +115,7 @@ export default function CheckInClient() {
               <span className="dot" /> ตรวจสอบข้อมูล
             </div>
             <div className="headline headline-small" style={{ marginBottom: "12px" }}>
-              ข้อมูลผู้เช็คอิน
+              <strong>ข้อมูลผู้เช็คอิน</strong>
             </div>
             <p className="sub" style={{ marginBottom: "24px" }}>
               กรุณาตรวจสอบรายละเอียดของคุณด้านล่าง และกดปุ่มเพื่อยืนยันการเช็คอิน

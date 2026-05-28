@@ -150,7 +150,7 @@ function HomeContent() {
           <div id="loc-checking" className="loc-checking">
             <div className="loc-spinner">
               <div className="spinner-ring" />
-              <p>กำลังตรวจสอบตำแหน่ง…<br /><em>Checking your location</em></p>
+              <p>กำลัง<strong>ตรวจสอบตำแหน่ง</strong>…<br /><em>Checking your location</em></p>
             </div>
           </div>
 
