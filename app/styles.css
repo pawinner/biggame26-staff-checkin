@@ -584,14 +584,19 @@ body::after {
 .qr-logo-container {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+}
+
+.qr-logo-container .badge {
+  margin-bottom: 0;
 }
 
 .qr-logo-text {
   font-family: "Bebas Neue", sans-serif;
-  font-size: 32px;
+  font-size: 48px;
   letter-spacing: 0.05em;
   color: var(--text);
+  line-height: 1;
 }
 
 .qr-logo-text span {

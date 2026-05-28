@@ -51,7 +51,7 @@ export default function QRPage() {
             <span className="dot" /> Big Game 2026
           </div>
           <h1 className="qr-logo-text">
-            Staff Portal <span>Check-in</span>
+            Hello Staff &amp; <span>P&apos;Demo</span>
           </h1>
         </div>
       </header>
