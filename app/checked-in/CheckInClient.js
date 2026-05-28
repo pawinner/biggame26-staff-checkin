@@ -34,10 +34,27 @@ export default function CheckInClient() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchStatus();
   }, []);
 
   const handleConfirm = async () => {
+    // Create and pre-warm the audio object inside the user interaction call stack
+    const audio = new Audio("/sounds/applepay.mp3");
+    // Play and immediately pause to unlock the audio context on iOS Safari
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        })
+        .catch((err) => {
+          // Ignore errors during pre-warming (e.g. if already handled or blocked)
+          console.log("Audio pre-warming status:", err);
+        });
+    }
+
     setConfirming(true);
     setError(null);
     try {
@@ -46,6 +63,10 @@ export default function CheckInClient() {
       if (res.ok && data.success) {
         setCheckedInTime(data.time);
         setUserData((prev) => ({ ...prev, checkedInTime: data.time }));
+        // Play the pre-warmed audio
+        audio.play().catch((err) => {
+          console.warn("Audio play failed after checkin:", err);
+        });
       } else {
         setError(data.error || "เช็คอินไม่สำเร็จ / Check-in failed.");
       }
