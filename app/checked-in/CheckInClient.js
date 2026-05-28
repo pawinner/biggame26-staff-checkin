@@ -41,17 +41,24 @@ export default function CheckInClient() {
   const handleConfirm = async () => {
     // Create and pre-warm the audio object inside the user interaction call stack
     const audio = new Audio("/sounds/applepay.mp3");
+    audio.muted = true;
+
+    let hasFinishedCheckIn = false;
+
     // Play and immediately pause to unlock the audio context on iOS Safari
     const playPromise = audio.play();
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
-          audio.pause();
-          audio.currentTime = 0;
+          if (!hasFinishedCheckIn) {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.muted = false;
+          }
         })
         .catch((err) => {
-          // Ignore errors during pre-warming (e.g. if already handled or blocked)
           console.log("Audio pre-warming status:", err);
+          audio.muted = false;
         });
     }
 
@@ -61,16 +68,21 @@ export default function CheckInClient() {
       const res = await fetch("/api/checkin", { method: "POST" });
       const data = await res.json();
       if (res.ok && data.success) {
+        hasFinishedCheckIn = true;
         setCheckedInTime(data.time);
         setUserData((prev) => ({ ...prev, checkedInTime: data.time }));
-        // Play the pre-warmed audio
+        // Play the pre-warmed audio (unmuted)
+        audio.muted = false;
+        audio.currentTime = 0;
         audio.play().catch((err) => {
           console.warn("Audio play failed after checkin:", err);
         });
       } else {
+        audio.muted = false;
         setError(data.error || "เช็คอินไม่สำเร็จ / Check-in failed.");
       }
     } catch (err) {
+      audio.muted = false;
       setError("ไม่สามารถบันทึกการเช็คอินได้ / Check-in connection error.");
     } finally {
       setConfirming(false);
