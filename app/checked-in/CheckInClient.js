@@ -136,6 +136,10 @@ export default function CheckInClient() {
             <button className="btn btn-primary" onClick={fetchStatus}>
               ลองอีกครั้ง / Try Again
             </button>
+            <p className="contact-info">
+              Any problems? Please contact{" "}
+              <a href="mailto:pawinner@docchula.com">pawinner@docchula.com</a>
+            </p>
             <div className="corner">ERROR</div>
           </div>
         </div>
@@ -172,6 +176,10 @@ export default function CheckInClient() {
             <button className="btn btn-success" onClick={handleConfirm} disabled={confirming}>
               {confirming ? "กำลังบันทึกเวลาเช็คอิน..." : "ยืนยัน"}
             </button>
+            <p className="contact-info">
+              Any problems? Please contact{" "}
+              <a href="mailto:pawinner@docchula.com">pawinner@docchula.com</a>
+            </p>
             <div className="corner">CONFIRM</div>
           </div>
         </div>
@@ -213,6 +221,10 @@ export default function CheckInClient() {
                 <span className="detail-value">{sessionName || "-"}</span>
               </div>
             </div>
+            <p className="contact-info">
+              Any problems? Please contact{" "}
+              <a href="mailto:pawinner@docchula.com">pawinner@docchula.com</a>
+            </p>
             <div className="corner">SUCCESS</div>
           </div>
         </div>

@@ -868,5 +868,52 @@ body::after {
   }
 }
 
+/* Contact information styles */
+.contact-info {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 24px;
+  line-height: 1.5;
+}
+
+.contact-info a {
+  color: var(--gold);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.contact-info a:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.qr-contact-box {
+  text-align: center;
+  font-size: 15px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px;
+  border-radius: 16px;
+  margin-top: 8px;
+  line-height: 1.5;
+  backdrop-filter: blur(8px);
+}
+
+.qr-contact-box a {
+  color: var(--gold);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.qr-contact-box a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+
 
 

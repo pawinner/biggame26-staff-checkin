@@ -4,9 +4,9 @@ import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-const TARGET_LAT = 13.733552040952299;
-const TARGET_LNG = 100.53617267849575;
-const RADIUS_M = 500;
+const TARGET_LAT = 13.733483;
+const TARGET_LNG = 100.537590;
+const RADIUS_M = 200;
 
 function GoogleIcon() {
   return (
@@ -81,7 +81,7 @@ function HomeContent() {
         } else {
           const km = (dist / 1000).toFixed(2);
           document.getElementById("err-dist").textContent =
-            `ระยะห่างของคุณจากสถานที่จัดงาน: ~${km} กม. (ต้องอยู่ภายใน 500 ม.)`;
+            `ระยะห่างของคุณจากสถานที่จัดงาน: ~${km} กม. (ต้องอยู่ภายใน 200 ม.)`;
           goTo("screen-loc-err");
         }
         button.style.display = "flex";
@@ -114,6 +114,10 @@ function HomeContent() {
           {authError === "AccessDenied" && (
             <p className="auth-error">กรุณาเข้าสู่ระบบด้วยบัญชี @docchula.com เท่านั้น</p>
           )}
+          <p className="contact-info">
+            พบปัญหาติดต่อ / Any problems? Please contact{" "}
+            <a href="mailto:pawinner@docchula.com">pawinner@docchula.com</a>
+          </p>
           <div className="corner">v2026.1</div>
         </div>
       </div>
@@ -154,6 +158,10 @@ function HomeContent() {
             </div>
           </div>
 
+          <p className="contact-info">
+            พบปัญหาติดต่อ / Any problems? Please contact{" "}
+            <a href="mailto:pawinner@docchula.com">pawinner@docchula.com</a>
+          </p>
           <div className="corner">LOCATION</div>
         </div>
       </div>
@@ -176,6 +184,10 @@ function HomeContent() {
             Sign in with Docchula
           </button>
           <p className="signin-note">ลงชื่อเข้าใช้ด้วยบัญชี Docchula ของคุณ<br />เพื่อบันทึกการเข้าร่วมงาน Big Game 2026</p>
+          <p className="contact-info">
+            พบปัญหาติดต่อ / Any problems? Please contact{" "}
+            <a href="mailto:pawinner@docchula.com">pawinner@docchula.com</a>
+          </p>
           <div className="corner">SIGN IN</div>
         </div>
       </div>
@@ -193,6 +205,10 @@ function HomeContent() {
             </svg>
             ลองอีกครั้ง / Try Again
           </button>
+          <p className="contact-info">
+            พบปัญหาติดต่อ / Any problems? Please contact{" "}
+            <a href="mailto:pawinner@docchula.com">pawinner@docchula.com</a>
+          </p>
           <div className="corner">ERROR</div>
         </div>
       </div>

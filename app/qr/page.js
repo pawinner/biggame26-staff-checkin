@@ -137,6 +137,12 @@ export default function QRPage() {
                 </li>
               </ul>
             </div>
+
+            {/* Troubleshooting contact info */}
+            <div className="qr-contact-box">
+              พบปัญหาการใช้งานติดต่อ / Any problems? Please contact{" "}
+              <a href="mailto:pawinner@docchula.com">pawinner@docchula.com</a>
+            </div>
           </div>
         </div>
       </main>
