@@ -278,8 +278,8 @@ export default function CheckInClient({ userEmail }) {
               <span className="dot" /> ยืนยันข้อมูล / Confirm Registration
             </div>
             <div className="headline headline-small" style={{ marginBottom: "12px" }}>
-              <strong>ยืนยันการเชื่อมโยง</strong><br />
-              <span>Confirm Link</span>
+              <strong>ยืนยันการเชื่อมอีเมล</strong><br />
+              <span>Confirm Email</span>
             </div>
             <p className="sub" style={{ marginBottom: "24px" }}>
               กรุณาตรวจสอบข้อมูลเพื่อความถูกต้องก่อนยืนยัน
