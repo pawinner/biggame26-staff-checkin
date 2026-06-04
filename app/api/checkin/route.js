@@ -24,6 +24,9 @@ export async function GET() {
       throw new Error(`Google Apps Script returned status ${res.status}`);
     }
     const data = await res.json();
+    if (!data.success && data.error === "Email not found in CheckIn sheet") {
+      return NextResponse.json({ success: false, error: data.error, emailNotFound: true });
+    }
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

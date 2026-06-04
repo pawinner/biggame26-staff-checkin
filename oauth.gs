@@ -36,6 +36,8 @@ function doGet(e) {
     const headers = data[0];
     const emailColIdx = headers.indexOf("Docchula_Email");
     const nicknameColIdx = headers.indexOf("Nickname");
+    const nameColIdx = headers.indexOf("Name");
+    const surnameColIdx = headers.indexOf("Surname");
     const jobColIdx = headers.indexOf("Job");
     const sessionColIdx = headers.indexOf(sessionName);
     
@@ -45,11 +47,83 @@ function doGet(e) {
     if (nicknameColIdx === -1) {
       return jsonResponse({ success: false, error: "Column 'Nickname' not found" });
     }
+    if (nameColIdx === -1) {
+      return jsonResponse({ success: false, error: "Column 'Name' not found" });
+    }
+    if (surnameColIdx === -1) {
+      return jsonResponse({ success: false, error: "Column 'Surname' not found" });
+    }
     if (jobColIdx === -1) {
       return jsonResponse({ success: false, error: "Column 'Job' not found" });
     }
     if (sessionColIdx === -1) {
       return jsonResponse({ success: false, error: "Column '" + sessionName + "' not found" });
+    }
+    
+    // Action: getUnlinkedUsers
+    if (action === "getUnlinkedUsers") {
+      const unlinkedUsers = [];
+      for (let i = 1; i < data.length; i++) {
+        const rowEmail = data[i][emailColIdx].toString().trim();
+        if (!rowEmail) {
+          unlinkedUsers.push({
+            name: data[i][nameColIdx].toString().trim(),
+            surname: data[i][surnameColIdx].toString().trim(),
+            nickname: data[i][nicknameColIdx].toString().trim()
+          });
+        }
+      }
+      return jsonResponse({
+        success: true,
+        users: unlinkedUsers
+      });
+    }
+    
+    // Action: linkEmail
+    if (action === "linkEmail") {
+      const name = e.parameter.name;
+      const surname = e.parameter.surname || "";
+      if (!name) {
+        return jsonResponse({ success: false, error: "Name parameter is required to link email" });
+      }
+      
+      let userRowIdx = -1;
+      const searchName = name.toLowerCase().trim();
+      const searchSurname = surname.toLowerCase().trim();
+      for (let i = 1; i < data.length; i++) {
+        const rowName = data[i][nameColIdx].toString().toLowerCase().trim();
+        const rowSurname = data[i][surnameColIdx].toString().toLowerCase().trim();
+        if (rowName === searchName && rowSurname === searchSurname) {
+          userRowIdx = i;
+          break;
+        }
+      }
+      
+      if (userRowIdx === -1) {
+        return jsonResponse({ success: false, error: "User not found with specified Name and Surname" });
+      }
+      
+      const existingEmail = data[userRowIdx][emailColIdx].toString().trim();
+      if (existingEmail) {
+        return jsonResponse({ success: false, error: "This user already has a linked email" });
+      }
+      
+      // Check if email already linked to another row
+      const targetEmail = email.toLowerCase().trim();
+      for (let i = 1; i < data.length; i++) {
+        const rowEmail = data[i][emailColIdx].toString().toLowerCase().trim();
+        if (rowEmail === targetEmail) {
+          return jsonResponse({ success: false, error: "This email is already linked to another user" });
+        }
+      }
+      
+      // Write the email to cell (1-based index)
+      checkinSheet.getRange(userRowIdx + 1, emailColIdx + 1).setValue(email.trim());
+      
+      return jsonResponse({
+        success: true,
+        message: "Email linked successfully"
+      });
     }
     
     // Find the user row
@@ -111,14 +185,18 @@ function doPost(e) {
   try {
     let action = e.parameter.action;
     let email = e.parameter.email;
+    let name = e.parameter.name;
+    let surname = e.parameter.surname;
     
     if (!action && e.postData && e.postData.contents) {
       const payload = JSON.parse(e.postData.contents);
       action = payload.action;
       email = payload.email;
+      name = payload.name;
+      surname = payload.surname;
     }
     
-    return doGet({ parameter: { action: action, email: email } });
+    return doGet({ parameter: { action: action, email: email, name: name, surname: surname } });
   } catch (err) {
     return jsonResponse({ success: false, error: err.toString() });
   }

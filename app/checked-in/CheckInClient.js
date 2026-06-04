@@ -3,13 +3,31 @@
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 
-export default function CheckInClient() {
+export default function CheckInClient({ userEmail }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userData, setUserData] = useState(null);
   const [sessionName, setSessionName] = useState("");
   const [checkedInTime, setCheckedInTime] = useState(null);
   const [confirming, setConfirming] = useState(false);
+
+  const [isRegistrationMode, setIsRegistrationMode] = useState(false);
+  const [unlinkedUsers, setUnlinkedUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isLinking, setIsLinking] = useState(false);
+
+  const fetchUnlinkedUsers = async () => {
+    try {
+      const res = await fetch("/api/checkin/unlinked");
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setUnlinkedUsers(data.users || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch unlinked users:", err);
+    }
+  };
 
   const fetchStatus = async () => {
     setLoading(true);
@@ -23,6 +41,10 @@ export default function CheckInClient() {
         if (data.user.checkedInTime) {
           setCheckedInTime(data.user.checkedInTime);
         }
+        setIsRegistrationMode(false);
+      } else if (data.emailNotFound) {
+        setIsRegistrationMode(true);
+        fetchUnlinkedUsers();
       } else {
         setError(data.error || "เกิดข้อผิดพลาดในการดึงข้อมูล / Failed to fetch user data.");
       }
@@ -89,6 +111,52 @@ export default function CheckInClient() {
     }
   };
 
+  const handleLinkEmail = async () => {
+    if (!selectedUser) return;
+    setIsLinking(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/checkin/link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: selectedUser.name,
+          surname: selectedUser.surname,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsRegistrationMode(false);
+        setSelectedUser(null);
+        setSearchQuery("");
+        fetchStatus();
+      } else {
+        setError(data.error || "ไม่สามารถเชื่อมโยงอีเมลได้ / Failed to link email.");
+        setIsRegistrationMode(false);
+      }
+    } catch (err) {
+      setError("เกิดข้อผิดพลาดในการเชื่อมต่อ / Linking connection error.");
+      setIsRegistrationMode(false);
+    } finally {
+      setIsLinking(false);
+    }
+  };
+
+  const handleCancelSelection = () => {
+    setSelectedUser(null);
+  };
+
+  const filteredUsers = searchQuery.length >= 2
+    ? unlinkedUsers.filter((user) => {
+        const query = searchQuery.toLowerCase().trim();
+        return (
+          user.name.toLowerCase().includes(query) ||
+          user.surname.toLowerCase().includes(query) ||
+          user.nickname.toLowerCase().includes(query)
+        );
+      })
+    : [];
+
   return (
     <>
       {/* Logout button - fixed in top right, accessible at all times */}
@@ -145,7 +213,112 @@ export default function CheckInClient() {
         </div>
       )}
 
-      {!loading && !error && !checkedInTime && (
+      {!loading && !error && isRegistrationMode && !selectedUser && (
+        <div className="screen active">
+          <div className="card">
+            <div className="badge">
+              <span className="dot" /> ลงทะเบียนสตาฟ / Staff Registration
+            </div>
+            <div className="headline headline-small" style={{ marginBottom: "12px" }}>
+              <strong>ค้นหาชื่อของคุณ</strong><br />
+              <span>Find your name</span>
+            </div>
+            <p className="sub" style={{ marginBottom: "24px" }}>
+              ไม่พบอีเมลของคุณในระบบ กรุณาค้นหาชื่อของคุณเพื่อลงทะเบียนเชื่อมโยงกับอีเมลนี้
+              <br />
+              <em>We couldn&apos;t find your email in our system. Please search for your name to link it to this email.</em>
+            </p>
+
+            <div className="search-container" style={{ position: "relative", width: "100%", marginBottom: "24px" }}>
+              <input
+                type="text"
+                className="input-text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="พิมพ์ชื่อ นามสกุล หรือชื่อเล่น..."
+              />
+              {searchQuery.length >= 2 && (
+                <div className="results-list">
+                  {filteredUsers.length > 0 ? (
+                    filteredUsers.map((user, idx) => (
+                      <div
+                        key={idx}
+                        className="result-item"
+                        onClick={() => setSelectedUser(user)}
+                      >
+                        {user.name} {user.surname} ({user.nickname})
+                      </div>
+                    ))
+                  ) : (
+                    <div className="no-results">ไม่พบรายชื่อผู้ใช้ที่ตรงกัน / No matching users found</div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <p className="search-hint" style={{ fontSize: "12px", color: "var(--muted)", textAlign: "left" }}>
+              * พิมพ์อย่างน้อย 2 ตัวอักษรเพื่อค้นหา
+              <br />
+              <em>* Type at least 2 letters to search</em>
+            </p>
+
+            <p className="contact-info" style={{ marginTop: "24px" }}>
+              พบปัญหาติดต่อ / Any problems? Please contact{" "}
+              <a href="mailto:pawinner@docchula.com">pawinner@docchula.com</a>
+            </p>
+            <div className="corner">REGISTER</div>
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && isRegistrationMode && selectedUser && (
+        <div className="screen active">
+          <div className="card">
+            <div className="badge">
+              <span className="dot" /> ยืนยันข้อมูล / Confirm Registration
+            </div>
+            <div className="headline headline-small" style={{ marginBottom: "12px" }}>
+              <strong>ยืนยันการเชื่อมโยง</strong><br />
+              <span>Confirm Link</span>
+            </div>
+            <p className="sub" style={{ marginBottom: "24px" }}>
+              กรุณาตรวจสอบข้อมูลเพื่อความถูกต้องก่อนยืนยัน
+              <br />
+              <em>Please double check your information before confirming.</em>
+            </p>
+
+            <div className="user-details" style={{ marginBottom: "24px" }}>
+              <div className="detail-item">
+                <span className="detail-label">ชื่อ-นามสกุล:</span>
+                <span className="detail-value">{selectedUser.name} {selectedUser.surname}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">ชื่อเล่น:</span>
+                <span className="detail-value">{selectedUser.nickname || "-"}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">เชื่อมโยงกับอีเมล:</span>
+                <span className="detail-value" style={{ fontSize: "14px", wordBreak: "break-all" }}>{userEmail}</span>
+              </div>
+            </div>
+
+            <button className="btn btn-blue" onClick={handleLinkEmail} disabled={isLinking}>
+              {isLinking ? "กำลังบันทึกข้อมูล..." : "ยืนยันการเชื่อมโยง / Confirm Link"}
+            </button>
+            <button className="btn btn-ghost" onClick={handleCancelSelection} disabled={isLinking}>
+              ยกเลิก / Cancel
+            </button>
+
+            <p className="contact-info" style={{ marginTop: "24px" }}>
+              พบปัญหาติดต่อ / Any problems? Please contact{" "}
+              <a href="mailto:pawinner@docchula.com">pawinner@docchula.com</a>
+            </p>
+            <div className="corner">CONFIRM</div>
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && !checkedInTime && !isRegistrationMode && (
         <div className="screen active">
           <div className="card">
             <div className="badge">
@@ -185,7 +358,7 @@ export default function CheckInClient() {
         </div>
       )}
 
-      {!loading && !error && checkedInTime && (
+      {!loading && !error && checkedInTime && !isRegistrationMode && (
         <div className="screen active">
           <div className="card centered">
             <div className="checkmark-wrapper">

@@ -9,5 +9,5 @@ export default async function CheckedInPage() {
     redirect("/");
   }
 
-  return <CheckInClient />;
+  return <CheckInClient userEmail={session?.user?.email} />;
 }
