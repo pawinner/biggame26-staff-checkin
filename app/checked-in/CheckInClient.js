@@ -303,7 +303,7 @@ export default function CheckInClient({ userEmail }) {
             </div>
 
             <button className="btn btn-blue" onClick={handleLinkEmail} disabled={isLinking}>
-              {isLinking ? "กำลังบันทึกข้อมูล..." : "ยืนยันการเชื่อมโยง / Confirm Link"}
+              {isLinking ? "กำลังบันทึกข้อมูล..." : "ยืนยันการเชื่อมอีเมล"}
             </button>
             <button className="btn btn-ghost" onClick={handleCancelSelection} disabled={isLinking}>
               ยกเลิก / Cancel
