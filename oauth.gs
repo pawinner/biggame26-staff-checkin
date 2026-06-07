@@ -8,6 +8,21 @@ function doGet(e) {
     if (!action) {
       return jsonResponse({ success: false, error: "Action parameter is required" });
     }
+    
+    // Action: getSessionName (doesn't require email)
+    if (action === "getSessionName") {
+      const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+      const configSheet = ss.getSheetByName("Configuration");
+      if (!configSheet) {
+        return jsonResponse({ success: false, error: "Configuration sheet not found" });
+      }
+      const sessionName = configSheet.getRange("A2").getValue().toString().trim();
+      return jsonResponse({
+        success: true,
+        sessionName: sessionName
+      });
+    }
+    
     if (!email) {
       return jsonResponse({ success: false, error: "Email parameter is required" });
     }

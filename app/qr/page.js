@@ -13,6 +13,27 @@ const SCREENSHOTS = [
 export default function QRPage() {
   const [timeString, setTimeString] = useState("");
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [sessionName, setSessionName] = useState("");
+
+  // Fetch Check-In Round name
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const res = await fetch("/api/checkin/session");
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setSessionName(data.sessionName);
+        }
+      } catch (err) {
+        console.error("Failed to fetch session name:", err);
+      }
+    };
+
+    fetchSession();
+    // Poll every 30 seconds to update if the check-in round changes
+    const interval = setInterval(fetchSession, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Live Clock Effect
   useEffect(() => {
@@ -53,6 +74,15 @@ export default function QRPage() {
           <h1 className="qr-logo-text">
             Hello Staff &amp; <span>P&apos;Demo</span>
           </h1>
+        </div>
+
+        {/* RIGHT: Check-in Round Badge */}
+        <div className="qr-round-badge">
+          <span className="qr-round-label">รอบเช็คอิน / Active Round</span>
+          <div className="qr-round-value">
+            <span className="qr-round-dot" />
+            {sessionName || "Loading..."}
+          </div>
         </div>
       </header>
 
