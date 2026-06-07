@@ -78,7 +78,7 @@ export default function QRPage() {
 
         {/* RIGHT: Check-in Round Badge */}
         <div className="qr-round-badge">
-          <span className="qr-round-label">รอบเช็คอิน / Active Round</span>
+          <span className="qr-round-label">รอบการเช็คอิน / Check-In Round</span>
           <div className="qr-round-value">
             <span className="qr-round-dot" />
             {sessionName || "Loading..."}
