@@ -117,14 +117,14 @@ export default function QRPage() {
                 </h2>
                 <div className="qr-code-wrapper">
                   <img
-                    src="/images/qr.svg"
+                    src="/images/qrdev.svg"
                     alt="Check-in Link QR Code"
                     className="qr-code-image"
                   />
                 </div>
                 <p className="qr-subtitle-link">
                   <a
-                    href="https://biggame26-checkin.vercel.app"
+                    href="https://biggame26-checkin.vercel.app?dev=true"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="qr-link"
